@@ -1,2 +1,7 @@
 # CABERT
-Company-Aware BERT
+Python implementation of Company-Aware BERT
+
+## Citation
+```
+In preparation
+```
