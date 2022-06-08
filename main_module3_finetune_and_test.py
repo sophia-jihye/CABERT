@@ -10,15 +10,16 @@ from transformers_helper import load_tokenizer_and_model
 from CustomDataset import CustomDataset, encode_for_inference
 import finetuning_classification, reports
 
-root_dir = '/data/finetune/jihye_data/fin_tweet_spam' # 43 server
+root_dir = '/data/jihye_data/CABERT' 
 model_save_dir = os.path.join(root_dir, 'temp')
 train_filepaths = sorted(glob(os.path.join(root_dir, 'data', 'train_*.csv')))
 test_filepath = os.path.join(root_dir, 'data', 'test_10000.csv')
 
-model_name_or_dirs = sorted(glob(os.path.join(root_dir, 'pt_10-Ks_*', 'item*')))
-model_name_or_dirs.extend(['bert-base-uncased', 'nghuyong/ernie-2.0-en', 'ProsusAI/finbert'])
+model_name_or_dirs = []
+model_name_or_dirs.extend(sorted(glob(os.path.join(root_dir, 'pt_ernie*', 'item*'))))
+model_name_or_dirs.extend(sorted(glob(os.path.join(root_dir, 'pt_finbert*', 'item*'))))
 
-save_dir_format = os.path.join(root_dir, 'result_{}_{}')
+save_dir_format = os.path.join(root_dir, 'result_{}_{}_{}')
 
 def do_prepare_data(relabel_dict, filepath):
     df = pd.read_csv(filepath)[['text', 'label']]
@@ -76,7 +77,7 @@ if __name__ == '__main__':
         for model_name_or_dir in model_name_or_dirs:
             masking_mode = os.path.basename(os.path.dirname(model_name_or_dir)).replace('pt_10-Ks_','')
             data_mode = os.path.basename(model_name_or_dir)
-            save_dir = save_dir_format.format(masking_mode, data_mode)
+            save_dir = save_dir_format.format(os.path.basename(model_name_or_dir), masking_mode, data_mode)
             if not os.path.exists(save_dir): os.makedirs(save_dir)
                 
             start_finetuning(model_name_or_dir, num_classes, train_texts, train_labels, val_texts, val_labels, model_save_dir)
